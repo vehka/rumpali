@@ -1,0 +1,4 @@
+# commercial songs used for local testing stay out of the repo
+back_in_black.mid
+*.mid
+!demo/*.mid
