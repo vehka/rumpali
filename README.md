@@ -55,7 +55,8 @@ A demo song is put there when the folder is empty.
 
 Rumpali sends MIDI, to `sound out` (PARAMS > midi):
 
-- the backing channels of the song,
+- the backing channels of the song, with velocities scaled by
+  `backing volume` (PARAMS > song),
 - the song's own drums, if `guide drums` is quiet or full,
 - your hits as GM drum notes on channel 10, if `play my hits` is on
   (never back to the port they came from). `my hits velocity` scales their

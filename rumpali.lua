@@ -113,6 +113,10 @@ local function dispatch(e)
       local g = guide_scale()
       if g == 0 then return end
       vel = math.max(1, math.floor(vel * g + 0.5))
+    else
+      local b = params:get("rumpali_backing") / 100
+      if b == 0 then return end
+      vel = util.clamp(math.floor(vel * b + 0.5), 1, 127)
     end
     local key = ch * 128 + e.a
     if held[key] then out:note_off(e.a, 0, ch) end
@@ -380,7 +384,7 @@ local function add_params()
 
   params:add_separator("rumpali_sep", "RUMPALI")
 
-  params:add_group("rumpali_song_group", "song", 6)
+  params:add_group("rumpali_song_group", "song", 7)
   params:add_file("rumpali_song", "song", songs_dir)
   params:set_action("rumpali_song", load_song)
   params:add_number("rumpali_tempo", "tempo", 25, 150, 100, function(p) return p:get() .. "%" end)
@@ -392,6 +396,7 @@ local function add_params()
     dirty = true
   end)
   params:add_option("rumpali_guide", "guide drums", { "off", "quiet", "full" }, 1)
+  params:add_number("rumpali_backing", "backing volume", 0, 150, 100, function(p) return p:get() .. "%" end)
   params:add_number("rumpali_gap", "countdown after", 1, 16, 2, function(p)
     return p:get() .. (p:get() == 1 and " bar" or " bars") .. " rest"
   end)
