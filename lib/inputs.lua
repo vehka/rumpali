@@ -7,10 +7,10 @@ local drums = include("lib/drums")
 
 local inputs = {}
 
--- Analog Rytm: each track sends on its own MIDI channel (track 1 on
--- channel 1 and so on), whatever the note. Unverified against the
--- device's MIDI config, so learn pads if they don't land in the right lane.
-local RYTM_TRACKS = {
+-- Channels: each track sends on its own MIDI channel (track 1 on
+-- channel 1 and so on), whatever the note. Track order follows a common
+-- drum machine layout; learn pads if they don't land in the right lane.
+local CHANNEL_TRACKS = {
   "kick",      -- 1 BD
   "snare",     -- 2 SD
   "side",      -- 3 RS
@@ -28,18 +28,18 @@ local RYTM_TRACKS = {
 inputs.PROFILES = {
   {
     id = "gm",
-    name = "GM / Debut Kit",
-    -- General MIDI drum notes on any channel (the Debut Kit sends on 10)
+    name = "GM",
+    -- General MIDI drum notes on any channel
     lookup = function(ch, note)
       local s = drums.gm_sound(note)
       if s then return s, note end
     end,
   },
   {
-    id = "rytm",
-    name = "Analog Rytm",
+    id = "channels",
+    name = "Channels",
     lookup = function(ch, note)
-      local id = RYTM_TRACKS[ch]
+      local id = CHANNEL_TRACKS[ch]
       if id then
         local s = drums.by_id[id]
         return s, s.gm
@@ -86,11 +86,15 @@ function inputs.clear(profile_index, learned)
   learned[p.id] = nil
 end
 
+-- profile ids from older versions
+local RENAMED = { rytm = "channels" }
+
 -- keep only well-formed entries from a loaded file
 function inputs.validate(t)
   local out = {}
   if type(t) ~= "table" or t.schema ~= 1 or type(t.learned) ~= "table" then return out end
   for pid, map in pairs(t.learned) do
+    pid = RENAMED[pid] or pid
     if type(pid) == "string" and type(map) == "table" then
       for k, id in pairs(map) do
         if type(k) == "string" and k:match("^%d+:%d+$") and drums.by_id[id] then

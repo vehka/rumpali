@@ -4,8 +4,6 @@ Drum practice for norns. Rumpali plays a MIDI song, shows its drum part as
 cues scrolling toward a hit line, and scores your pad hits from an
 electronic kit or drum machine.
 
-Status: MVP, tested on desktop norns only.
-
 ## Pages
 
 E1 switches page.
@@ -70,10 +68,9 @@ that port as `sound out`. Any GM sound module works too.
 
 `drums in` is the MIDI port your kit is on (or all), `drum kit` the profile:
 
-- **GM / Debut Kit**: General MIDI drum notes on any channel.
-- **Analog Rytm**: each track on its own channel (track 1 = channel 1 ...).
-  Not verified against the device yet; use the learn page if pads land in
-  the wrong lane.
+- **GM**: General MIDI drum notes on any channel.
+- **Channels**: each track on its own channel (track 1 = channel 1 ...). Should
+  work with most drum machines. (Tested on Analog Rytm.) Use learn mode to map the pads accurately.
 
 ## Timing
 
