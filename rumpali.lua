@@ -154,6 +154,7 @@ end
 local function play_hit(gm_note, vel, from_port)
   if params:get("rumpali_play_hits") ~= 2 or not out then return end
   if from_port == params:get("rumpali_out") then return end -- no echo
+  vel = util.clamp(math.floor(vel * params:get("rumpali_hit_boost") / 100 + 0.5), 1, 127)
   out:note_on(gm_note, vel, 10)
   clock.run(function()
     clock.sleep(0.15)
@@ -420,7 +421,7 @@ local function add_params()
     end
   end)
 
-  params:add_group("rumpali_midi_group", "midi", 4)
+  params:add_group("rumpali_midi_group", "midi", 5)
   params:add_option("rumpali_in", "drums in", in_names, 1)
   params:add_option("rumpali_profile", "drum kit", inputs.names, 1)
   params:set_action("rumpali_profile", function() dirty = true end)
@@ -430,6 +431,7 @@ local function add_params()
     out = midi.connect(v)
   end)
   params:add_option("rumpali_play_hits", "play my hits", { "off", "on" }, 2)
+  params:add_number("rumpali_hit_boost", "my hits velocity", 50, 400, 100, function(p) return p:get() .. "%" end)
 end
 
 -- ---------- norns callbacks ----------

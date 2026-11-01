@@ -58,7 +58,8 @@ Rumpali sends MIDI, to `sound out` (PARAMS > midi):
 - the backing channels of the song,
 - the song's own drums, if `guide drums` is quiet or full,
 - your hits as GM drum notes on channel 10, if `play my hits` is on
-  (never back to the port they came from).
+  (never back to the port they came from). `my hits velocity` scales their
+  velocity (up to 400%, capped at 127) if your kit plays too quietly.
 
 Recommended: [nb_fluid](https://github.com/vehka/nb_fluid). Enable the mod,
 assign its `fluidsynth` device to a port in SYSTEM > DEVICES > MIDI, and pick
