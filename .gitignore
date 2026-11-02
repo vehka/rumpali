@@ -2,3 +2,6 @@
 back_in_black.mid
 *.mid
 !demo/*.mid
+
+# source photo for img/splash.png, see README credits
+drummer.jpg

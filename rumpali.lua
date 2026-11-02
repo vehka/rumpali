@@ -10,6 +10,8 @@
 -- track: K3 play/pause
 --   K2 stop, E2 song, E3 tempo
 -- learn: E2 sound, hit a pad
+-- splash image credits:
+--   Spencer Plouzek / Unsplash
 
 local drums = include("lib/drums")
 local inputs = include("lib/inputs")
@@ -48,6 +50,8 @@ local free_hits = {}  -- { t, sound, lane, vel }
 local flash = {}      -- [lane] = util.time() until which the label lights
 local message, message_until = nil, 0
 local dirty = true
+local SPLASH_SECS = 2
+local splash_img, splash_until = nil, 0 -- start-up image, until key/enc or timeout
 
 -- ---------- helpers ----------
 
@@ -441,7 +445,18 @@ end
 
 -- ---------- norns callbacks ----------
 
+local function end_splash()
+  splash_img = nil
+  dirty = true
+end
+
 function init()
+  local ok, img = pcall(screen.load_png, norns.state.path .. "img/splash.png")
+  if ok then
+    splash_img, splash_until = img, math.huge
+    redraw() -- show it while the rest of init runs
+  end
+
   songs_dir = norns.state.data .. "songs/"
   install_demos()
 
@@ -464,15 +479,19 @@ function init()
   ui_clock = clock.run(function()
     while true do
       clock.sleep(1 / 30)
+      if splash_img and util.time() >= splash_until then end_splash() end
       if dirty or state == "playing" or page == 2 then
         redraw()
         dirty = false
       end
     end
   end)
+  -- count the splash time from here, so a slow load doesn't eat into it
+  if splash_img then splash_until = util.time() + SPLASH_SECS end
 end
 
 function enc(n, d)
+  if splash_img then end_splash(); return end
   if n == 1 then
     local new = util.clamp(page + d, 1, #PAGES)
     if new ~= page then
@@ -496,6 +515,7 @@ local clear_armed_until = 0
 
 function key(n, z)
   if z ~= 1 then return end
+  if splash_img then end_splash(); return end
   if page == 1 then
     if n == 3 then play_pause()
     elseif n == 2 then
@@ -600,7 +620,8 @@ end
 
 function redraw()
   screen.clear()
-  if page == 1 then draw_track()
+  if splash_img then screen.display_image(splash_img, 0, 0)
+  elseif page == 1 then draw_track()
   elseif page == 2 then draw_free()
   else draw_learn() end
   screen.update()
